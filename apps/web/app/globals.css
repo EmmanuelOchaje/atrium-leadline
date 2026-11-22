@@ -1,0 +1,169 @@
+/* Design tokens from §11.2 */
+:root {
+  --paper: #f6f8f7;
+  --shoal: #d3e6ef;
+  --survey: #1b3b55;
+  --contour: #3f7faf;
+  --buff: #e7dab3;
+  --magenta: #b0287c;
+  --rule: #c8d5dd;
+  --muted: #5b6e7d;
+  --kelp: #2f6e46;
+  --ochre: #a86b14;
+  --rust: #a33a2b;
+
+  /* Type scale (ratio 1.25) */
+  --size-sm: 12.8px;
+  --size-base: 16px;
+  --size-md: 20px;
+  --size-lg: 25px;
+  --size-xl: 31px;
+  --size-2xl: 39px;
+  --size-3xl: 49px;
+
+  /* Line heights */
+  --lh-sm: 1.4;
+  --lh-base: 1.5;
+  --lh-lg: 1.6;
+
+  /* Spacing (4px base) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Border radius */
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1a24;
+    --survey: #e4eef3;
+    --contour: #7ba8d1;
+    --muted: #9ba9b8;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #0e1a24;
+  --survey: #e4eef3;
+  --contour: #7ba8d1;
+  --muted: #9ba9b8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--paper);
+  color: var(--survey);
+  font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: var(--size-base);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: var(--size-3xl);
+}
+
+h2 {
+  font-size: var(--size-2xl);
+}
+
+h3 {
+  font-size: var(--size-xl);
+}
+
+a {
+  color: var(--contour);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--magenta);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+/* Tabular numbers everywhere numeric */
+.number, [class*="price"], [class*="depth"], [class*="amount"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus ring (magenta, 2px with 2px offset) */
+:focus-visible {
+  outline: 2px solid var(--magenta);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Utility classes */
+.text-muted {
+  color: var(--muted);
+}
+
+.text-kelp {
+  color: var(--kelp);
+}
+
+.text-ochre {
+  color: var(--ochre);
+}
+
+.text-rust {
+  color: var(--rust);
+}
+
+.text-magenta {
+  color: var(--magenta);
+}
+
+.border-rule {
+  border-color: var(--rule);
+}
+
+.bg-shoal {
+  background-color: var(--shoal);
+}
+
+.bg-buff {
+  background-color: var(--buff);
+}
