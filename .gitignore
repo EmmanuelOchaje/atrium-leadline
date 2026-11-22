@@ -1,0 +1,48 @@
+# Foundry
+out/
+cache/
+artifacts/
+*.sol.js
+*.sol.ts
+
+# Node
+node_modules/
+dist/
+.pnpm-debug.log*
+pnpm-lock.yaml
+npm-debug.log*
+yarn-error.log*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Next.js
+apps/web/.next/
+apps/web/out/
+apps/web/.turbo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+logs/
+
+# Misc
+.cache/
+*.pem

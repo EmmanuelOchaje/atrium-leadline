@@ -1,0 +1,23 @@
+{
+  "name": "leadline",
+  "version": "0.0.0",
+  "description": "Leadline - Uniswap v4 hook for token market-making governance",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test",
+    "contracts:fmt": "cd contracts && forge fmt",
+    "contracts:clean": "cd contracts && forge clean",
+    "web:dev": "pnpm -C apps/web dev",
+    "web:build": "pnpm -C apps/web build",
+    "web:lint": "pnpm -C apps/web lint",
+    "web:typecheck": "pnpm -C apps/web typecheck",
+    "bots:mm": "cd bots && tsx mm.ts",
+    "bots:flow": "cd bots && tsx flow.ts",
+    "bots:attacks": "cd bots && tsx attacks.ts"
+  },
+  "devDependencies": {
+    "pnpm": "^9.0.0"
+  }
+}
