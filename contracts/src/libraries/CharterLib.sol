@@ -9,8 +9,8 @@ import {FullMath} from "@uniswap/v4-core/src/libraries/FullMath.sol";
 /// @notice Parameter validation and epoch scoring math
 library CharterLib {
     // Global caps (§5.8)
-    uint16 internal constant MIN_BAND_TICKS = 10;
-    uint16 internal constant MAX_BAND_TICKS = 2000;
+    int24 internal constant MIN_BAND_TICKS = 10;
+    int24 internal constant MAX_BAND_TICKS = 2000;
     int24 internal constant MIN_WIDTH_FLOOR = 20;
     int24 internal constant MAX_WIDTH_CEIL = 40000;
     uint32 internal constant MIN_EPOCH = 60;
@@ -21,10 +21,7 @@ library CharterLib {
     uint256 internal constant MAX_TARGET_DEPTH = type(uint128).max;
 
     /// @notice Validate charter parameters
-    function validateParams(ILeadline.CharterParams calldata p, int24 currentTick, int24 tickSpacing)
-        internal
-        pure
-    {
+    function validateParams(ILeadline.CharterParams calldata p, int24 currentTick, int24 tickSpacing) internal pure {
         // bandTicks in range
         if (p.bandTicks < MIN_BAND_TICKS || p.bandTicks > MAX_BAND_TICKS) {
             revert ILeadline.ParamsOutOfBounds();
@@ -104,10 +101,11 @@ library CharterLib {
 
     /// @notice Score a closed epoch
     /// Returns the score (0..10000) and payout amount
-    function scoreEpoch(
-        ILeadline.Charter storage c,
-        uint64 epochEnd
-    ) internal view returns (uint16 scoreBps, uint256 payout, uint256 refund) {
+    function scoreEpoch(ILeadline.Charter storage c, uint64 epochEnd)
+        internal
+        view
+        returns (uint16 scoreBps, uint256 payout, uint256 refund)
+    {
         uint64 epochStart = c.epochStart;
         uint256 duration = epochEnd - epochStart;
 
@@ -117,14 +115,12 @@ library CharterLib {
         }
 
         // Depth scores: belowBps = min(10000, belowDepthSeconds × 10000 / (target × T))
-        uint256 belowScore = c.belowDepthSeconds == 0
-            ? 0
-            : FullMath.mulDiv(c.belowDepthSeconds * 10000, 1, c.targetDepth * duration);
+        uint256 belowScore =
+            c.belowDepthSeconds == 0 ? 0 : FullMath.mulDiv(c.belowDepthSeconds * 10000, 1, c.targetDepth * duration);
         if (belowScore > 10000) belowScore = 10000;
 
-        uint256 aboveScore = c.aboveDepthSeconds == 0
-            ? 0
-            : FullMath.mulDiv(c.aboveDepthSeconds * 10000, 1, c.targetDepth * duration);
+        uint256 aboveScore =
+            c.aboveDepthSeconds == 0 ? 0 : FullMath.mulDiv(c.aboveDepthSeconds * 10000, 1, c.targetDepth * duration);
         if (aboveScore > 10000) aboveScore = 10000;
 
         // Depth is the minimum of below and above
@@ -133,9 +129,8 @@ library CharterLib {
         // Uptime score: uptimeBps_ = min(10000, secondsInBand × 10000 / (uptimeTarget × T / 10000))
         // Simplifies to: secondsInBand × 10000^2 / (uptimeTarget × T × 10000)
         uint256 uptimeTarget = (c.uptimeBps * duration) / 10000;
-        uint256 uptimeScore = c.secondsInBand == 0 || uptimeTarget == 0
-            ? 0
-            : FullMath.mulDiv(c.secondsInBand * 10000, 1, uptimeTarget);
+        uint256 uptimeScore =
+            c.secondsInBand == 0 || uptimeTarget == 0 ? 0 : FullMath.mulDiv(c.secondsInBand * 10000, 1, uptimeTarget);
         if (uptimeScore > 10000) uptimeScore = 10000;
 
         // Combined score = depthScore × uptimeScore / 10000

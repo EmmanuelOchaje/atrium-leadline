@@ -105,40 +105,17 @@ interface ILeadline {
         CharterParams params
     );
 
-    event Steered(
-        uint256 indexed id,
-        address indexed marketMaker,
-        int24 tickLower,
-        int24 tickUpper,
-        uint128 liquidity
-    );
+    event Steered(uint256 indexed id, address indexed marketMaker, int24 tickLower, int24 tickUpper, uint128 liquidity);
 
     event Pinged(uint256 indexed id, address indexed marketMaker);
 
-    event Poked(
-        uint256 indexed id,
-        address indexed poker,
-        int24 tickLower,
-        int24 tickUpper,
-        uint128 liquidity
-    );
+    event Poked(uint256 indexed id, address indexed poker, int24 tickLower, int24 tickUpper, uint128 liquidity);
 
     event UnderstudySet(uint256 indexed id, address indexed understudy);
 
-    event HandedOver(
-        uint256 indexed id,
-        address indexed from,
-        address indexed to
-    );
+    event HandedOver(uint256 indexed id, address indexed from, address indexed to);
 
-    event DepthUpdated(
-        uint256 indexed id,
-        uint256 below,
-        uint256 above,
-        bool inBand,
-        int24 tick,
-        uint160 sqrtPriceX96
-    );
+    event DepthUpdated(uint256 indexed id, uint256 below, uint256 above, bool inBand, int24 tick, uint160 sqrtPriceX96);
 
     event EpochClosed(
         uint256 indexed id,
@@ -154,19 +131,9 @@ interface ILeadline {
         uint256 refund
     );
 
-    event Recalled(
-        uint256 indexed id,
-        uint256 amount0,
-        uint256 amount1,
-        uint256 fees0,
-        uint256 fees1
-    );
+    event Recalled(uint256 indexed id, uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1);
 
-    event Claimed(
-        address indexed account,
-        address indexed token,
-        uint256 amount
-    );
+    event Claimed(address indexed account, address indexed token, uint256 amount);
 
     // Errors
     error NotIssuer();
@@ -186,9 +153,7 @@ interface ILeadline {
     error NothingToClaim();
 
     // Functions (§5.3)
-    function createCharter(CharterParams calldata p)
-        external
-        returns (uint256 id);
+    function createCharter(CharterParams calldata p) external returns (uint256 id);
 
     function steer(uint256 id, int24 tickLower, int24 tickUpper) external;
 
@@ -209,23 +174,11 @@ interface ILeadline {
     // Views
     function getCharter(uint256 id) external view returns (Charter memory);
 
-    function getEpoch(uint256 id, uint32 epoch)
-        external
-        view
-        returns (EpochResult memory);
+    function getEpoch(uint256 id, uint32 epoch) external view returns (EpochResult memory);
 
-    function currentDepth(uint256 id)
-        external
-        view
-        returns (uint256 below, uint256 above);
+    function currentDepth(uint256 id) external view returns (uint256 below, uint256 above);
 
-    function projectedScore(uint256 id)
-        external
-        view
-        returns (uint16 scoreBps, uint256 projectedPayout);
+    function projectedScore(uint256 id) external view returns (uint16 scoreBps, uint256 projectedPayout);
 
-    function owedOf(address account, address token)
-        external
-        view
-        returns (uint256);
+    function owedOf(address account, address token) external view returns (uint256);
 }

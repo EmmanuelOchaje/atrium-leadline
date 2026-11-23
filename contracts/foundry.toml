@@ -10,12 +10,14 @@ remappings = [
   "@uniswap/v4-core/=lib/v4-core/",
   "@uniswap/v4-periphery/=lib/v4-periphery/",
   "@openzeppelin/=lib/openzeppelin-contracts/",
-  "@oz-upgrades/=lib/openzeppelin-contracts-upgradeable/",
+  "@openzeppelin-hooks/=lib/uniswap-hooks/src/",
 ]
 
 solc = "0.8.26"
+via_ir = true
+optimizer = true
 
-[profile.default.rpc_endpoints]
+[rpc_endpoints]
 http = "http://127.0.0.1:8545"
 mainnet = "https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}"
 sepolia = "https://eth-sepolia.alchemyapi.io/v2/${ALCHEMY_API_KEY}"

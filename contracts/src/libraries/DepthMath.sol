@@ -44,15 +44,15 @@ library DepthMath {
                 uint160 sqrtB = TickMath.getSqrtPriceAtTick(sqrtBUpperTick);
 
                 if (sqrtA < sqrtB) {
-                    uint256 amount1Below =
-                        SqrtPriceMath.getAmount1Delta(sqrtA, sqrtB, liquidity, false);
+                    uint256 amount1Below = SqrtPriceMath.getAmount1Delta(sqrtA, sqrtB, liquidity, false);
 
                     if (quoteIsCurrency1) {
                         depthBelow = amount1Below;
                     } else {
                         // Convert token1 to quote (currency0): multiply by sqrtPrice twice / 2^192
-                        depthBelow =
-                            FullMath.mulDiv(FullMath.mulDiv(amount1Below, sqrtPriceX96, 2 ** 96), sqrtPriceX96, 2 ** 96);
+                        depthBelow = FullMath.mulDiv(
+                            FullMath.mulDiv(amount1Below, sqrtPriceX96, 2 ** 96), sqrtPriceX96, 2 ** 96
+                        );
                     }
                 }
             }
@@ -71,12 +71,13 @@ library DepthMath {
                 uint160 sqrtAEffective = sqrtPriceX96 > sqrtA ? sqrtPriceX96 : sqrtA;
 
                 if (sqrtAEffective < sqrtB) {
-                    uint256 amount0Above =
-                        SqrtPriceMath.getAmount0Delta(sqrtAEffective, sqrtB, liquidity, false);
+                    uint256 amount0Above = SqrtPriceMath.getAmount0Delta(sqrtAEffective, sqrtB, liquidity, false);
 
                     if (quoteIsCurrency1) {
                         // Convert token0 to quote (currency1): divide by sqrtPrice twice / 2^192
-                        depthAbove = FullMath.mulDiv(FullMath.mulDiv(amount0Above, 2 ** 96, sqrtPriceX96), 2 ** 96, sqrtPriceX96);
+                        depthAbove = FullMath.mulDiv(
+                            FullMath.mulDiv(amount0Above, 2 ** 96, sqrtPriceX96), 2 ** 96, sqrtPriceX96
+                        );
                     } else {
                         depthAbove = amount0Above;
                     }
