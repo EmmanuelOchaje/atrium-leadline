@@ -1,18 +1,25 @@
-/* Design tokens from §11.2 */
-:root {
-  --paper: #f6f8f7;
-  --shoal: #d3e6ef;
-  --survey: #1b3b55;
-  --contour: #3f7faf;
-  --buff: #e7dab3;
-  --magenta: #b0287c;
-  --rule: #c8d5dd;
-  --muted: #5b6e7d;
-  --kelp: #2f6e46;
-  --ochre: #a86b14;
-  --rust: #a33a2b;
+@import "tailwindcss";
 
-  /* Type scale (ratio 1.25) */
+/* Design tokens — dark "proof of depth" theme */
+:root {
+  --ink: #06061a;
+  --panel: #0b0b22;
+  --panel-2: #11112c;
+  --white: #ffffff;
+  --text: #eef4f1;
+  --muted: #9aaab8;
+  --muted-2: #b9cad6;
+  --dim: #5d6a80;
+  --mint: #b7f5d8;
+  --mint-strong: #8ff0c4;
+  --lime: #c6f36b;
+  --lime-ink: #0c1a04;
+  --violet: #9b8cff;
+  --violet-soft: #ded6ff;
+  --rust: #ff9b9b;
+  --rule: rgba(255, 255, 255, 0.12);
+  --rule-soft: rgba(255, 255, 255, 0.08);
+
   --size-sm: 12.8px;
   --size-base: 16px;
   --size-md: 20px;
@@ -21,41 +28,12 @@
   --size-2xl: 39px;
   --size-3xl: 49px;
 
-  /* Line heights */
-  --lh-sm: 1.4;
-  --lh-base: 1.5;
-  --lh-lg: 1.6;
-
-  /* Spacing (4px base) */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
-  --space-3xl: 64px;
-  --space-4xl: 96px;
-
-  /* Border radius */
-  --radius-sm: 2px;
-  --radius-md: 6px;
-  --radius-lg: 12px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0e1a24;
-    --survey: #e4eef3;
-    --contour: #7ba8d1;
-    --muted: #9ba9b8;
-  }
-}
-
-:root[data-theme="dark"] {
-  --paper: #0e1a24;
-  --survey: #e4eef3;
-  --contour: #7ba8d1;
-  --muted: #9ba9b8;
 }
 
 * {
@@ -70,100 +48,182 @@ html {
 }
 
 body {
-  background: var(--paper);
-  color: var(--survey);
-  font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--ink);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: var(--size-base);
   line-height: 1.5;
+  font-variant-numeric: tabular-nums;
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Newsreader", Georgia, serif;
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.2;
-}
-
-h1 {
-  font-size: var(--size-3xl);
-}
-
-h2 {
-  font-size: var(--size-2xl);
-}
-
-h3 {
-  font-size: var(--size-xl);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inter Tight", Inter, sans-serif;
+  letter-spacing: -0.03em;
 }
 
 a {
-  color: var(--contour);
+  color: var(--mint);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 a:hover {
-  color: var(--magenta);
+  color: var(--white);
 }
 
-button {
+button,
+select {
   font-family: inherit;
   cursor: pointer;
-  border: none;
-  background: none;
-  padding: 0;
 }
 
-/* Tabular numbers everywhere numeric */
-.number, [class*="price"], [class*="depth"], [class*="amount"] {
+:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.number,
+[class*="price"],
+[class*="depth"],
+[class*="amount"] {
   font-variant-numeric: tabular-nums;
 }
 
-/* Focus ring (magenta, 2px with 2px offset) */
-:focus-visible {
-  outline: 2px solid var(--magenta);
-  outline-offset: 2px;
-}
-
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Utility classes */
 .text-muted {
   color: var(--muted);
 }
-
-.text-kelp {
-  color: var(--kelp);
+.text-mint {
+  color: var(--mint);
 }
-
-.text-ochre {
-  color: var(--ochre);
+.text-lime {
+  color: var(--lime);
 }
-
 .text-rust {
   color: var(--rust);
 }
 
-.text-magenta {
-  color: var(--magenta);
+/* Shared motion */
+.ll-bob {
+  animation: ll-bob 6s ease-in-out infinite;
+}
+.ll-bob2 {
+  animation: ll-bob 6s ease-in-out -3s infinite;
+}
+@keyframes ll-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.ll-twinkle {
+  animation: ll-twinkle 4s ease-in-out infinite;
+}
+@keyframes ll-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+.ll-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ll-ping 4.2s ease-out infinite;
+}
+@keyframes ll-ping {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.ll-lead {
+  animation: ll-lead 2.2s ease-in-out infinite alternate;
+}
+@keyframes ll-lead {
+  from {
+    box-shadow: 0 0 8px rgba(198, 243, 107, 0.6);
+  }
+  to {
+    box-shadow: 0 0 24px rgba(198, 243, 107, 1);
+  }
+}
+.ll-now {
+  animation: ll-now 1.6s ease-in-out infinite alternate;
+}
+@keyframes ll-now {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.border-rule {
-  border-color: var(--rule);
+@media (prefers-reduced-motion: reduce) {
+  .ll-bob,
+  .ll-bob2,
+  .ll-twinkle,
+  .ll-ping,
+  .ll-lead,
+  .ll-now {
+    animation: none;
+  }
 }
 
-.bg-shoal {
-  background-color: var(--shoal);
+/* The charter composer is the one light-themed page (a form, not a hero) —
+   scoped so it doesn't leak the dark theme's tokens into it or vice versa. */
+.composer-page {
+  background: #f6f8f7;
+  color: #1b3b55;
+  min-height: 100vh;
 }
-
-.bg-buff {
-  background-color: var(--buff);
+.composer-page .bg-paper {
+  background: #f6f8f7;
+}
+.composer-page .bg-survey {
+  background: #1b3b55;
+}
+.composer-page .text-survey {
+  color: #1b3b55;
+}
+.composer-page .text-paper {
+  color: #f6f8f7;
+}
+.composer-page .bg-magenta {
+  background: #b0287c;
+}
+.composer-page .text-magenta {
+  color: #b0287c;
+}
+.composer-page .bg-shoal {
+  background: #d3e6ef;
+}
+.composer-page .border-rule {
+  border-color: #c8d5dd;
+}
+.composer-page .text-muted {
+  color: #5b6e7d;
+}
+.composer-page .text-rust {
+  color: #a33a2b;
+}
+.composer-page h1,
+.composer-page h2,
+.composer-page h3 {
+  font-family: "Inter Tight", Inter, sans-serif;
 }
