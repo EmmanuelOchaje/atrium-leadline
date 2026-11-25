@@ -82,7 +82,10 @@ export function useCharter(chainId: 31337, charterId: bigint): UseCharterResult 
   };
 }
 
-/** Steer and ping, scoped to one charter — the market maker's two liveness actions. */
+/**
+ * Every per-charter write: the market maker's liveness actions (steer, ping)
+ * and the issuer's custody actions (handover, setUnderstudy, recall).
+ */
 export function useCharterActions(chainId: 31337, charterId: bigint) {
   const hook = addresses[chainId]?.hook as `0x${string}` | undefined;
   const { writeContract, isPending, error } = useWriteContract();
@@ -102,7 +105,22 @@ export function useCharterActions(chainId: 31337, charterId: bigint) {
     });
   }
 
-  return { ping, steer, isPending, error };
+  function handover() {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "handover", args: [charterId] });
+  }
+
+  function setUnderstudy(addr: `0x${string}`) {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "setUnderstudy", args: [charterId, addr] });
+  }
+
+  function recall() {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "recall", args: [charterId] });
+  }
+
+  return { ping, steer, handover, setUnderstudy, recall, isPending, error };
 }
 
 export function useEpoch(chainId: 31337, charterId: bigint, epoch: number) {
