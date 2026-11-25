@@ -2,6 +2,7 @@
 out/
 cache/
 artifacts/
+broadcast/
 *.sol.js
 *.sol.ts
 
