@@ -1,4 +1,4 @@
-import { useReadContract, useReadContracts } from "wagmi";
+import { useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import { leadlineHookAbi, addresses } from "@leadline/sdk";
 
 /** Mirrors `ILeadline.Charter` (src/interfaces/ILeadline.sol) field-for-field. */
@@ -43,14 +43,15 @@ type UseCharterResult = {
   charter: Charter | undefined;
   depth: [bigint, bigint] | undefined;
   score: [number, bigint] | undefined;
+  tick: number | undefined;
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
 };
 
 /**
- * Reads a charter's full on-chain state (`getCharter`) plus its live depth and
- * projected score/payout for the current epoch, refetched on every new block.
+ * Reads a charter's full on-chain state (`getCharter`) plus its live depth,
+ * projected score/payout and current pool tick, refetched on every new block.
  */
 export function useCharter(chainId: 31337, charterId: bigint): UseCharterResult {
   const hook = addresses[chainId]?.hook as `0x${string}` | undefined;
@@ -62,21 +63,46 @@ export function useCharter(chainId: 31337, charterId: bigint): UseCharterResult 
           { ...contract, functionName: "getCharter", args: [charterId] },
           { ...contract, functionName: "currentDepth", args: [charterId] },
           { ...contract, functionName: "projectedScore", args: [charterId] },
+          { ...contract, functionName: "currentTick", args: [charterId] },
         ]
       : [],
     query: { enabled: Boolean(hook), refetchInterval: 3000 },
   });
 
-  const [charter, depth, score] = data ?? [];
+  const [charter, depth, score, tick] = data ?? [];
 
   return {
     charter: charter?.result as Charter | undefined,
     depth: depth?.result as [bigint, bigint] | undefined,
     score: score?.result as [number, bigint] | undefined,
+    tick: tick?.result as number | undefined,
     isLoading,
     error: error ?? null,
     refetch,
   };
+}
+
+/** Steer and ping, scoped to one charter — the market maker's two liveness actions. */
+export function useCharterActions(chainId: 31337, charterId: bigint) {
+  const hook = addresses[chainId]?.hook as `0x${string}` | undefined;
+  const { writeContract, isPending, error } = useWriteContract();
+
+  function ping() {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "ping", args: [charterId] });
+  }
+
+  function steer(tickLower: number, tickUpper: number) {
+    if (!hook) return;
+    writeContract({
+      address: hook,
+      abi: leadlineHookAbi,
+      functionName: "steer",
+      args: [charterId, tickLower, tickUpper],
+    });
+  }
+
+  return { ping, steer, isPending, error };
 }
 
 export function useEpoch(chainId: 31337, charterId: bigint, epoch: number) {
