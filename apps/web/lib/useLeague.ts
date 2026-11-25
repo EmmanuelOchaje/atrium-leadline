@@ -9,6 +9,7 @@ export type LeagueRow = {
   avgScoreBps: number;
   avgSecondsInBandPct: number;
   handoversAway: number;
+  recentScoresBps: number[];
 };
 
 /**
@@ -64,6 +65,7 @@ export function useLeague(chainId: 31337) {
             avgScoreBps: 0,
             avgSecondsInBandPct: 0,
             handoversAway: 0,
+            recentScoresBps: [],
           };
           row.charterIds.add(args.id);
           const duration = Number(args.end - args.start) || 1;
@@ -71,6 +73,7 @@ export function useLeague(chainId: 31337) {
           row.avgScoreBps = (row.avgScoreBps * row.epochs + args.scoreBps) / (row.epochs + 1);
           row.avgSecondsInBandPct = (row.avgSecondsInBandPct * row.epochs + uptimePct) / (row.epochs + 1);
           row.epochs += 1;
+          row.recentScoresBps = [...row.recentScoresBps, args.scoreBps].slice(-12);
           byMm.set(key, row);
         }
 
