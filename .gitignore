@@ -22,6 +22,8 @@ yarn-error.log*
 apps/web/.next/
 apps/web/out/
 apps/web/.turbo
+apps/web/next-env.d.ts
+*.tsbuildinfo
 
 # IDE
 .vscode/
