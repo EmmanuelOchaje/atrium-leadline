@@ -501,6 +501,11 @@ contract LeadlineHook is BaseHook, IUnlockCallback, ILeadline {
         return (c.cachedBelow, c.cachedAbove);
     }
 
+    function currentTick(uint256 id) external view returns (int24 tick) {
+        Charter storage c = charters[id];
+        (, tick,,) = poolManager.getSlot0(c.key.toId());
+    }
+
     function projectedScore(uint256 id) external view returns (uint16 scoreBps, uint256 projectedPayout) {
         Charter storage c = charters[id];
         if (c.status == Status.Recalled) return (0, 0);

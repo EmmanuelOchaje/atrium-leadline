@@ -2,13 +2,16 @@
 export const addresses = {
   31337: {
   "poolManager": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "hook": "0xCfB1b4e92630b35e65d59d20C4fC4880660dC060",
+  "hook": "0xA8a551223183EaD6A92a65a2433C461E24E48060",
   "swapRouter": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
   "modifyLiquidityRouter": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
   "donateRouter": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
   "token0": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
   "token1": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-  "poolId": "0xad60b27a7d61895e1b1ebc83fa7d0cc0bd2377122a619301d64570fe56b923ec",
-  "charterId": 1
+  "poolFee": 3000,
+  "tickSpacing": 60,
+  "poolId": "0xbc5df4dd51129fb3a1e21391f331bd74d434b035b125f3498dfb9cd62596ad2e",
+  "charterId": 1,
+  "deployBlock": 0
 }
 } as const;

@@ -96,28 +96,36 @@ contract DeployLocal is Script {
         token0.approve(address(hook), type(uint256).max);
         token1.approve(address(hook), type(uint256).max);
 
+        // Decimals (and so which of token0/token1 is USDC) depend on deploy-time address
+        // sort order, not on mint order — read them back instead of assuming.
+        bool usdcIsToken0 = token0.decimals() == 6;
+        uint256 amount0 = usdcIsToken0 ? 25_000e6 : 1_000e18;
+        uint256 amount1 = usdcIsToken0 ? 1_000e18 : 25_000e6;
+        // DepthMath always expresses depth/target in the *quote* token's own decimals.
+        // Quote = USDC, so target depth and retainer are both in USDC's 6 decimals.
         ILeadline.CharterParams memory params = ILeadline.CharterParams({
             key: poolKey,
             marketMaker: marketMaker,
             understudy: understudy,
-            quoteIsCurrency1: true,
-            amount0: 25_000e18,
-            amount1: 25_000e6,
+            quoteIsCurrency1: !usdcIsToken0,
+            amount0: amount0,
+            amount1: amount1,
             tickLower: -180,
             tickUpper: 180,
             bandTicks: 200,
             minWidth: 120,
             maxWidth: 4000,
             fallbackHalfWidth: 1200,
-            targetDepth: 25_000e18,
+            targetDepth: 25_000e6,
             uptimeBps: 9000,
             epochLength: 120,
             graceSeconds: 45,
             numEpochs: 30,
-            retainerToken: address(token1),
+            retainerToken: usdcIsToken0 ? address(token0) : address(token1),
             retainerPerEpoch: 500e6
         });
         uint256 charterId = hook.createCharter(params);
+        uint256 deployBlock = block.number;
 
         vm.stopBroadcast();
 
@@ -136,7 +144,8 @@ contract DeployLocal is Script {
             address(token0),
             address(token1),
             poolKey,
-            charterId
+            charterId,
+            deployBlock
         );
     }
 
@@ -149,7 +158,8 @@ contract DeployLocal is Script {
         address token0,
         address token1,
         PoolKey memory poolKey,
-        uint256 charterId
+        uint256 charterId,
+        uint256 deployBlock
     ) internal {
         string memory json = string.concat(
             "{\n",
@@ -174,11 +184,20 @@ contract DeployLocal is Script {
             '  "token1": "',
             vm.toString(token1),
             '",\n',
+            '  "poolFee": ',
+            vm.toString(uint256(poolKey.fee)),
+            ",\n",
+            '  "tickSpacing": ',
+            vm.toString(int256(poolKey.tickSpacing)),
+            ",\n",
             '  "poolId": "',
             vm.toString(PoolId.unwrap(poolKey.toId())),
             '",\n',
             '  "charterId": ',
             vm.toString(charterId),
+            ",\n",
+            '  "deployBlock": ',
+            vm.toString(deployBlock),
             "\n}\n"
         );
 

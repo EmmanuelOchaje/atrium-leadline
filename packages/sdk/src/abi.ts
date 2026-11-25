@@ -1210,6 +1210,25 @@ export const leadlineHookAbi = [
   },
   {
     "type": "function",
+    "name": "currentTick",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "tick",
+        "type": "int24",
+        "internalType": "int24"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "epochs",
     "inputs": [
       {
