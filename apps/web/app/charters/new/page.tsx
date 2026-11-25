@@ -1,8 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAccount, useConnect } from "wagmi";
+import { pctToTicks, alignDown, alignUp } from "@leadline/sdk";
+import { useCreateCharter } from "../../../lib/useCreateCharter";
+
+const TICK_SPACING = 60;
 
 export default function NewCharterPage() {
+  const router = useRouter();
+  const { isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { create, step, charterId, error } = useCreateCharter(31337);
+
   const [formData, setFormData] = useState({
     poolId: "TIDE/USDC",
     tide: "1000",
@@ -17,6 +28,40 @@ export default function NewCharterPage() {
     marketMaker: "",
     understudy: "",
   });
+
+  const isBusy = step === "approve0" || step === "approve1" || step === "create";
+
+  async function handleCreate() {
+    const bandTicks = Math.abs(pctToTicks(Number(formData.bandPercent)));
+    const tickLower = alignDown(-bandTicks, TICK_SPACING);
+    const tickUpper = alignUp(bandTicks, TICK_SPACING);
+
+    await create({
+      tideAmountHuman: formData.tide,
+      usdcAmountHuman: formData.usdc,
+      tickLower,
+      tickUpper,
+      bandTicks,
+      minWidth: TICK_SPACING * 2,
+      maxWidth: bandTicks * 20,
+      fallbackHalfWidth: bandTicks * 6,
+      targetDepthUsdcHuman: formData.targetDepth,
+      uptimeBps: Math.round(Number(formData.uptimeTarget) * 100),
+      epochLength: Number(formData.epochLength),
+      graceSeconds: Number(formData.graceSeconds),
+      numEpochs: Number(formData.numEpochs),
+      retainerPerEpochUsdcHuman: formData.retainer,
+      marketMaker: formData.marketMaker as `0x${string}`,
+      understudy:
+        (formData.understudy || "0x0000000000000000000000000000000000000000") as `0x${string}`,
+    });
+  }
+
+  useEffect(() => {
+    if (step === "done" && charterId !== null) {
+      router.push(`/charters/${charterId}`);
+    }
+  }, [step, charterId, router]);
 
   return (
     <div className="min-h-screen bg-paper text-survey p-6">
@@ -162,9 +207,28 @@ export default function NewCharterPage() {
               </div>
             </section>
 
-            <button className="w-full px-6 py-3 bg-survey text-paper rounded hover:bg-magenta transition font-semibold">
-              Create Charter
-            </button>
+            {!isConnected ? (
+              <button
+                className="w-full px-6 py-3 bg-survey text-paper rounded hover:bg-magenta transition font-semibold"
+                onClick={() => connectors[0] && connect({ connector: connectors[0] })}
+              >
+                Connect wallet to create
+              </button>
+            ) : (
+              <button
+                disabled={isBusy || !formData.marketMaker}
+                onClick={handleCreate}
+                className="w-full px-6 py-3 bg-survey text-paper rounded hover:bg-magenta transition font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {step === "approve0" && "Approving TIDE…"}
+                {step === "approve1" && "Approving USDC…"}
+                {step === "create" && "Creating charter…"}
+                {(step === "idle" || step === "error") && "Create Charter"}
+              </button>
+            )}
+            {error && (
+              <p className="text-rust text-sm mt-2">{error.message.split("\n")[0]}</p>
+            )}
           </div>
 
           {/* Preview */}
