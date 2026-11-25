@@ -1,6 +1,14 @@
 "use client";
 
+import { useLeague } from "../../lib/useLeague";
+
+function shortAddr(a: string): string {
+  return `${a.slice(0, 6)}…${a.slice(-4)}`;
+}
+
 export default function LeaguePage() {
+  const { rows, loading } = useLeague(31337);
+
   return (
     <div className="min-h-screen bg-paper text-survey p-6">
       <div className="max-w-6xl mx-auto">
@@ -11,49 +19,33 @@ export default function LeaguePage() {
             <thead className="border-b border-rule bg-shoal">
               <tr className="text-left">
                 <th className="p-4">Market Maker</th>
-                <th className="p-4">Delivered</th>
+                <th className="p-4">Avg Score</th>
                 <th className="p-4">Time in Band</th>
-                <th className="p-4">Missed Epochs</th>
+                <th className="p-4">Epochs Closed</th>
                 <th className="p-4">Charters</th>
-                <th className="p-4">Last 12 Epochs</th>
                 <th className="p-4">Handed Over</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-rule hover:bg-shoal cursor-pointer">
-                <td className="p-4">Leeward Desk<br/><span className="text-muted">0x7099…79C8</span></td>
-                <td className="p-4 number">87%</td>
-                <td className="p-4">91%</td>
-                <td className="p-4">0</td>
-                <td className="p-4">3 / 3</td>
-                <td className="p-4">[████████████]</td>
-                <td className="p-4">0</td>
-              </tr>
-              <tr className="border-b border-rule hover:bg-shoal cursor-pointer">
-                <td className="p-4">Saltmarsh Liquidity<br/><span className="text-muted">0x3C44…93BC</span></td>
-                <td className="p-4 number">72%</td>
-                <td className="p-4">84%</td>
-                <td className="p-4">2</td>
-                <td className="p-4">2 / 2</td>
-                <td className="p-4">[██████████░░]</td>
-                <td className="p-4">1</td>
-              </tr>
-              <tr className="hover:bg-shoal cursor-pointer">
-                <td className="p-4">Northline Markets<br/><span className="text-muted">0x8899…CCDD</span></td>
-                <td className="p-4 number">91%</td>
-                <td className="p-4">95%</td>
-                <td className="p-4">0</td>
-                <td className="p-4">1 / 1</td>
-                <td className="p-4">[████████████]</td>
-                <td className="p-4">0</td>
-              </tr>
+              {rows.map((row) => (
+                <tr key={row.marketMaker} className="border-b border-rule hover:bg-shoal cursor-pointer last:border-0">
+                  <td className="p-4">{shortAddr(row.marketMaker)}</td>
+                  <td className="p-4 number">{(row.avgScoreBps / 100).toFixed(0)}%</td>
+                  <td className="p-4 number">{row.avgSecondsInBandPct.toFixed(0)}%</td>
+                  <td className="p-4 number">{row.epochs}</td>
+                  <td className="p-4 number">{row.charterIds.size}</td>
+                  <td className="p-4 number">{row.handoversAway}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
 
-        <p className="text-muted text-sm mt-6">
-          No closed epochs yet. Run a charter for one epoch to appear here.
-        </p>
+        {!loading && rows.length === 0 && (
+          <p className="text-muted text-sm mt-6">
+            No closed epochs yet. Run a charter for one epoch to appear here.
+          </p>
+        )}
       </div>
     </div>
   );
