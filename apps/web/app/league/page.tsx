@@ -74,7 +74,7 @@ export default function LeaguePage() {
                   style={{
                     width: 28,
                     textAlign: "center",
-                    fontFamily: "'Inter Tight', Inter, sans-serif",
+                    fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                     fontWeight: 600,
                     fontSize: 15,
                     color: i === 0 ? "#C6F36B" : "#9AAAB8",

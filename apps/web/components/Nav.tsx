@@ -40,7 +40,7 @@ export function Nav() {
         style={{ display: "flex", alignItems: "center", gap: 10, color: "#FFFFFF" }}
       >
         <Logo size={36} />
-        <span style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontWeight: 700, fontSize: 23, letterSpacing: "-0.03em" }}>
+        <span style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 23, letterSpacing: "-0.03em" }}>
           leadline
         </span>
       </Link>

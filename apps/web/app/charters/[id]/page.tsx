@@ -233,20 +233,20 @@ export default function ConsolePage({ params }: { params: { id: string } }) {
             <div style={{ display: "flex", flexWrap: "wrap", gap: 24, fontSize: 14, color: "#B9CAD6" }}>
               <span>
                 Projected pay{" "}
-                <strong style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 20, fontWeight: 500, color: "#FFFFFF" }}>
+                <strong style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 20, fontWeight: 500, color: "#FFFFFF" }}>
                   {fmt(projectedPayout, 6)}
                 </strong>{" "}
                 of {fmt(charter.retainerPerEpoch, 6)}
               </span>
               <span>
                 Fees collected{" "}
-                <strong style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 20, fontWeight: 500, color: "#FFFFFF" }}>
+                <strong style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 20, fontWeight: 500, color: "#FFFFFF" }}>
                   {fmt(charter.fees0, 18)} / {fmt(charter.fees1, 6)}
                 </strong>
               </span>
               <span>
                 Time in band{" "}
-                <strong style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 20, fontWeight: 500, color: "#FFFFFF" }}>
+                <strong style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 20, fontWeight: 500, color: "#FFFFFF" }}>
                   {charter.secondsInBand}s
                 </strong>{" "}
                 of {charter.uptimeBps / 100}% target

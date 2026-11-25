@@ -79,7 +79,7 @@ export default function LandingPage() {
           <h1
             style={{
               margin: 0,
-              fontFamily: "'Inter Tight', Inter, sans-serif",
+              fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               fontWeight: 700,
               fontSize: "clamp(44px, 7vw, 96px)",
               lineHeight: 0.95,
@@ -170,25 +170,25 @@ export default function LandingPage() {
 
           <div style={{ position: "absolute", left: 0, top: 50, display: "flex", flexDirection: "column", gap: 2 }}>
             <span style={{ fontSize: 13, color: "#B9CAD6" }}>Below price</span>
-            <span style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
+            <span style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
               27,400<span style={{ color: "#7C8C99", fontSize: 16 }}> USDC</span>
             </span>
           </div>
           <div style={{ position: "absolute", right: 0, top: 50, display: "flex", flexDirection: "column", gap: 2, textAlign: "right" }}>
             <span style={{ fontSize: 13, color: "#B9CAD6" }}>Above price</span>
-            <span style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
+            <span style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
               21,920<span style={{ color: "#7C8C99", fontSize: 16 }}> USDC</span>
             </span>
           </div>
           <div style={{ position: "absolute", left: 0, bottom: 20, display: "flex", flexDirection: "column", gap: 2 }}>
             <span style={{ fontSize: 13, color: "#B9CAD6" }}>Time in band</span>
-            <span style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
+            <span style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
               85.5<span style={{ color: "#7C8C99" }}>%</span>
             </span>
           </div>
           <div style={{ position: "absolute", right: 0, bottom: 20, display: "flex", flexDirection: "column", gap: 2, textAlign: "right" }}>
             <span style={{ fontSize: 13, color: "#B9CAD6" }}>Paid this epoch</span>
-            <span style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
+            <span style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em" }}>
               416<span style={{ color: "#7C8C99" }}>.00 / 500</span>
             </span>
           </div>
@@ -205,7 +205,7 @@ export default function LandingPage() {
           flexWrap: "wrap",
           justifyContent: "center",
           gap: "20px 64px",
-          fontFamily: "'Inter Tight', Inter, sans-serif",
+          fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
           fontSize: 20,
           fontWeight: 600,
           letterSpacing: "-0.02em",
@@ -357,7 +357,7 @@ export default function LandingPage() {
         }}
       >
         <span>
-          <span style={{ fontFamily: "'Inter Tight', Inter, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: "-0.03em", color: "#EEF4F1" }}>
+          <span style={{ fontFamily: "var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: "-0.03em", color: "#EEF4F1" }}>
             leadline
           </span>
           , built for the Uniswap Hook Incubator, cohort 11
