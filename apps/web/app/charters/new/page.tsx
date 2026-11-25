@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAccount, useConnect } from "wagmi";
 import { pctToTicks, alignDown, alignUp } from "@leadline/sdk";
@@ -64,9 +65,28 @@ export default function NewCharterPage() {
   }, [step, charterId, router]);
 
   return (
-    <div className="min-h-screen bg-paper text-survey p-6">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl mb-8">Write a Charter</h1>
+    <div className="composer-page">
+      <header className="border-b border-rule">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center gap-8">
+          <Link href="/" className="text-xl font-semibold text-survey">
+            leadline
+          </Link>
+          <nav aria-label="Main" className="flex gap-6 text-sm flex-grow">
+            <Link href="/charters/1" className="text-muted">
+              Charters
+            </Link>
+            <Link href="/league" className="text-muted">
+              Proving Ground
+            </Link>
+            <Link href="/charters/new" className="text-survey font-semibold">
+              Write a charter
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto p-6">
+        <h1 className="text-3xl font-semibold mb-8">Write a Charter</h1>
 
         <div className="grid grid-cols-2 gap-8">
           {/* Form */}
