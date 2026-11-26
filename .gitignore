@@ -3,6 +3,7 @@ out/
 cache/
 artifacts/
 broadcast/
+contracts/script/addresses.local.json
 *.sol.js
 *.sol.ts
 

@@ -20,6 +20,7 @@ optimizer = true
 fs_permissions = [
   { access = "write", path = "../packages/sdk/src" },
   { access = "read", path = "src" },
+  { access = "read-write", path = "script" },
 ]
 
 [rpc_endpoints]

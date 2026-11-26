@@ -173,11 +173,6 @@ contract DeployLocal is Script {
         );
     }
 
-    function _fundWithEth(address to, uint256 amount) internal {
-        (bool ok,) = to.call{value: amount}("");
-        require(ok, "DeployLocal: ETH funding failed");
-    }
-
     function _writeAddressBook(
         address poolManager,
         address hook,
@@ -240,5 +235,14 @@ contract DeployLocal is Script {
 
         vm.writeFile("../packages/sdk/src/addresses.ts", ts);
         console2.log("Wrote packages/sdk/src/addresses.ts");
+
+        // Plain JSON alongside it, for other scripts (SeedLeague) to read back —
+        // the .ts file wraps this same object in a `export const` the EVM can't parse.
+        vm.writeFile("script/addresses.local.json", json);
+    }
+
+    function _fundWithEth(address to, uint256 amount) internal {
+        (bool ok,) = to.call{value: amount}("");
+        require(ok, "DeployLocal: ETH funding failed");
     }
 }
