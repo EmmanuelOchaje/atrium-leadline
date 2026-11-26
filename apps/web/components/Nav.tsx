@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/charters/1", label: "Live charter" },
   { href: "/league", label: "Proving Ground" },
   { href: "/charters/1/notices", label: "Notices to Mariners" },
+  { href: "/charters/1/replay", label: "Replay" },
   { href: "/charters/new", label: "Write a charter" },
 ];
 
@@ -67,7 +68,8 @@ export function Nav() {
             (l.href === "/charters/1" &&
               pathname?.startsWith("/charters/") &&
               pathname !== "/charters/new" &&
-              !pathname.endsWith("/notices"));
+              !pathname.endsWith("/notices") &&
+              !pathname.endsWith("/replay"));
           return (
             <Link
               key={l.href}
