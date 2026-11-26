@@ -108,6 +108,15 @@ contract DeployLocal is Script {
         token0.approve(address(hook), type(uint256).max);
         token1.approve(address(hook), type(uint256).max);
 
+        vm.stopBroadcast();
+        vm.startBroadcast(
+            vm.envOr("SWAPPER_PRIVATE_KEY", uint256(0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007))
+        );
+        token0.approve(address(swapRouter), type(uint256).max);
+        token1.approve(address(swapRouter), type(uint256).max);
+        vm.stopBroadcast();
+        vm.startBroadcast(deployerKey);
+
         // Decimals (and so which of token0/token1 is USDC) depend on deploy-time address
         // sort order, not on mint order — read them back instead of assuming.
         bool usdcIsToken0 = token0.decimals() == 6;
