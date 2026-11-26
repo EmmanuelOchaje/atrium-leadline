@@ -11,4 +11,5 @@ export * from "./poolSwapTest";
 export * from "./poolModifyLiquidityTest";
 export * from "./strategy";
 export * from "./flows";
+export * from "./demoAccounts";
 export { addresses } from "./addresses";
