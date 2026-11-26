@@ -10,7 +10,7 @@ import { useDemoStore } from "../lib/demo";
 const LINKS = [
   { href: "/charters/1", label: "Live charter" },
   { href: "/league", label: "Proving Ground" },
-  { href: "/security", label: "Security" },
+  { href: "/charters/1/notices", label: "Notices to Mariners" },
   { href: "/charters/new", label: "Write a charter" },
 ];
 
@@ -62,7 +62,12 @@ export function Nav() {
         }}
       >
         {LINKS.map((l) => {
-          const active = pathname === l.href || (l.href === "/charters/1" && pathname?.startsWith("/charters/") && pathname !== "/charters/new");
+          const active =
+            pathname === l.href ||
+            (l.href === "/charters/1" &&
+              pathname?.startsWith("/charters/") &&
+              pathname !== "/charters/new" &&
+              !pathname.endsWith("/notices"));
           return (
             <Link
               key={l.href}

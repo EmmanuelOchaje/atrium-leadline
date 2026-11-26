@@ -364,7 +364,7 @@ export default function LandingPage() {
         </span>
         <span style={{ display: "flex", flexWrap: "wrap", gap: 20 }}>
           <a href="https://github.com">Source code</a>
-          <Link href="/security">Security</Link>
+          <Link href="/charters/1/notices">Notices to Mariners</Link>
         </span>
       </footer>
     </div>
