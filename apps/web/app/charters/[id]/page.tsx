@@ -3,8 +3,12 @@
 import { useAccount } from "wagmi";
 import { Nav } from "../../../components/Nav";
 import { Starfield } from "../../../components/Starfield";
+import { DemoDrawer } from "../../../components/DemoDrawer";
 import { useCharter, useCharterActions } from "../../../lib/useCharter";
 import { useCharterEvents } from "../../../lib/useCharterEvents";
+import { useDemoStore, DEMO_ROLES } from "../../../lib/demo";
+import { useDemoActions } from "../../../lib/useDemoActions";
+import { useAutopilot } from "../../../lib/useAutopilot";
 import { Sounder } from "./Sounder";
 
 function fmt(n: bigint, decimals: number): string {
@@ -126,8 +130,13 @@ export default function ConsolePage({ params }: { params: { id: string } }) {
   const charterId = BigInt(id);
   const { charter, depth, score, tick, isLoading, error } = useCharter(31337, charterId);
   const events = useCharterEvents(31337, charterId);
-  const { ping, steer, handover, recall, isPending } = useCharterActions(31337, charterId);
   const { address, isConnected } = useAccount();
+  const { demoMode, role, autopilot } = useDemoStore();
+  const demoAddress = DEMO_ROLES.find((r) => r.role === role)?.address;
+  const walletActions = useCharterActions(31337, charterId);
+  const demoActions = useDemoActions(31337, charterId, role);
+  const { ping, steer, poke, settle, claim, handover, recall, isPending } = demoMode ? demoActions : walletActions;
+  useAutopilot(charterId, charter, tick, demoMode && autopilot);
 
   if (isLoading) {
     return (
@@ -155,8 +164,9 @@ export default function ConsolePage({ params }: { params: { id: string } }) {
   const target = charter.targetDepth;
   const status = STATUS[charter.status] ?? STATUS[0];
 
-  const isIssuer = isConnected && address?.toLowerCase() === charter.issuer.toLowerCase();
-  const isMarketMaker = isConnected && address?.toLowerCase() === charter.marketMaker.toLowerCase();
+  const activeAddress = demoMode ? demoAddress : isConnected ? address : undefined;
+  const isIssuer = activeAddress?.toLowerCase() === charter.issuer.toLowerCase();
+  const isMarketMaker = activeAddress?.toLowerCase() === charter.marketMaker.toLowerCase();
 
   // epochIndex = epochs already closed; estimate remaining from the current
   // epoch's window against the charter's term end.
@@ -345,10 +355,36 @@ export default function ConsolePage({ params }: { params: { id: string } }) {
 
           {!isIssuer && !isMarketMaker && (
             <p style={{ fontSize: 13.5, color: "#9AAAB8", lineHeight: "20px" }}>
-              Connect the market maker&rsquo;s or issuer&rsquo;s wallet to steer, ping, hand over or recall this
-              charter.
+              {demoMode
+                ? "This role can&rsquo;t steer, ping, hand over or recall — but anyone can poke a stale charter, settle an epoch, or claim what they&rsquo;re owed."
+                : "Connect the market maker’s or issuer’s wallet to steer, ping, hand over or recall this charter."}
             </p>
           )}
+
+          <div style={{ marginTop: 4, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", flexDirection: "column", gap: 12 }}>
+            <span style={{ fontSize: 13, color: "#9AAAB8" }}>Anyone</span>
+            <ActionRow
+              title="Poke"
+              body="Move a stale position to the wide fallback range."
+              cta="Poke"
+              onClick={() => poke()}
+              disabled={isPending}
+            />
+            <ActionRow
+              title="Settle"
+              body="Close every epoch that has fully elapsed."
+              cta="Settle"
+              onClick={() => settle()}
+              disabled={isPending}
+            />
+            <ActionRow
+              title="Claim"
+              body="Pay out this account's owed retainer or refund."
+              cta="Claim"
+              onClick={() => claim(charter.retainerToken)}
+              disabled={isPending}
+            />
+          </div>
         </aside>
       </section>
 
@@ -379,6 +415,7 @@ export default function ConsolePage({ params }: { params: { id: string } }) {
           </div>
         )}
       </Panel>
+      <DemoDrawer epochLength={charter.epochLength} />
     </div>
   );
 }

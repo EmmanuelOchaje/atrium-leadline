@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { Logo } from "./Logo";
+import { RoleSwitcher } from "./RoleSwitcher";
+import { useDemoStore } from "../lib/demo";
 
 const LINKS = [
   { href: "/charters/1", label: "Live charter" },
@@ -21,6 +23,7 @@ export function Nav() {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
+  const { demoMode } = useDemoStore();
 
   return (
     <header
@@ -79,7 +82,9 @@ export function Nav() {
         })}
       </nav>
 
-      {isConnected && address ? (
+      {demoMode ? (
+        <RoleSwitcher />
+      ) : isConnected && address ? (
         <button
           onClick={() => disconnect()}
           style={{

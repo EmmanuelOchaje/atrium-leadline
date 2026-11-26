@@ -105,6 +105,21 @@ export function useCharterActions(chainId: 31337, charterId: bigint) {
     });
   }
 
+  function poke() {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "poke", args: [charterId] });
+  }
+
+  function settle(maxEpochs = 32n) {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "settle", args: [charterId, maxEpochs] });
+  }
+
+  function claim(token: `0x${string}`) {
+    if (!hook) return;
+    writeContract({ address: hook, abi: leadlineHookAbi, functionName: "claim", args: [token] });
+  }
+
   function handover() {
     if (!hook) return;
     writeContract({ address: hook, abi: leadlineHookAbi, functionName: "handover", args: [charterId] });
@@ -120,7 +135,7 @@ export function useCharterActions(chainId: 31337, charterId: bigint) {
     writeContract({ address: hook, abi: leadlineHookAbi, functionName: "recall", args: [charterId] });
   }
 
-  return { ping, steer, handover, setUnderstudy, recall, isPending, error };
+  return { ping, steer, poke, settle, claim, handover, setUnderstudy, recall, isPending, error };
 }
 
 export function useEpoch(chainId: 31337, charterId: bigint, epoch: number) {
