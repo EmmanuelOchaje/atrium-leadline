@@ -13,9 +13,9 @@
     "web:build": "pnpm -C apps/web build",
     "web:lint": "pnpm -C apps/web lint",
     "web:typecheck": "pnpm -C apps/web typecheck",
-    "bots:mm": "cd bots && tsx mm.ts",
-    "bots:flow": "cd bots && tsx flow.ts",
-    "bots:attacks": "cd bots && tsx attacks.ts"
+    "bots:mm": "pnpm -C bots exec tsx mm.ts",
+    "bots:flow": "pnpm -C bots exec tsx flow.ts",
+    "bots:attacks": "pnpm -C bots exec tsx attacks.ts"
   },
   "devDependencies": {
     "pnpm": "^9.0.0"
