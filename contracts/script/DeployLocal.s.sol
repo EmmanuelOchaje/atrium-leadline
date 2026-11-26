@@ -48,8 +48,20 @@ contract DeployLocal is Script {
         address swapper = vm.addr(
             vm.envOr("SWAPPER_PRIVATE_KEY", uint256(0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007))
         );
+        // "Anyone" in the web Console's role switcher: anvil's account #4, which has no role
+        // in the charter, for exercising the permissionless poke/settle/claim paths.
+        address anyone = vm.addr(
+            vm.envOr("ANYONE_PRIVATE_KEY", uint256(0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926))
+        );
 
         vm.startBroadcast(deployerKey);
+
+        // None of these demo keys are anvil's own funded dev accounts (only `issuer` is), so
+        // without this every non-issuer role switcher action fails on gas, not on logic.
+        _fundWithEth(marketMaker, 10 ether);
+        _fundWithEth(understudy, 10 ether);
+        _fundWithEth(swapper, 10 ether);
+        _fundWithEth(anyone, 10 ether);
 
         PoolManager poolManager = new PoolManager(deployer);
         PoolSwapTest swapRouter = new PoolSwapTest(poolManager);
@@ -99,8 +111,11 @@ contract DeployLocal is Script {
         // Decimals (and so which of token0/token1 is USDC) depend on deploy-time address
         // sort order, not on mint order — read them back instead of assuming.
         bool usdcIsToken0 = token0.decimals() == 6;
-        uint256 amount0 = usdcIsToken0 ? 25_000e6 : 1_000e18;
-        uint256 amount1 = usdcIsToken0 ? 1_000e18 : 25_000e6;
+        // Deposited a few % over the 25,000 target per side so the charter opens cleanly
+        // in band: DepthMath rounds down conservatively, so sizing this to exactly the
+        // target leaves it 1 wei short — in band on paper, out of band on-chain.
+        uint256 amount0 = usdcIsToken0 ? 26_250e6 : 1_050e18;
+        uint256 amount1 = usdcIsToken0 ? 1_050e18 : 26_250e6;
         // DepthMath always expresses depth/target in the *quote* token's own decimals.
         // Quote = USDC, so target depth and retainer are both in USDC's 6 decimals.
         ILeadline.CharterParams memory params = ILeadline.CharterParams({
@@ -147,6 +162,11 @@ contract DeployLocal is Script {
             charterId,
             deployBlock
         );
+    }
+
+    function _fundWithEth(address to, uint256 amount) internal {
+        (bool ok,) = to.call{value: amount}("");
+        require(ok, "DeployLocal: ETH funding failed");
     }
 
     function _writeAddressBook(
