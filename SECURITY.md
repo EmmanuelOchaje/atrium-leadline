@@ -10,22 +10,25 @@ rather than implicit.
 Each invariant below is enforced in `src/LeadlineHook.sol` and exercised by a test. I1 and
 I10 replay real incidents through `HandoverRecall.t.sol`; I4 is fuzzed in
 `SteerPingPoke.t.sol`; I2, I3, I5 and I7 are the "Notices to Mariners" attacks in
-`test/attacks/RedTeam.t.sol`; I6, I8 and I9 are exercised across the hook-function unit
-tests (an explicit invariant-fuzz handler over random action sequences, per BUILD.md §7,
-is still open — see Known limitations).
+`test/attacks/RedTeam.t.sol`; I9 is exercised in `SteerPingPoke.t.sol`'s poke tests; I1,
+I6, I8 and I10 are additionally checked by `test/invariant/Invariants.t.sol`'s
+`LeadlineHandler` — random `swap`/`warp`/`steer`/`ping`/`poke`/`handover`/`settle`/`claim`/
+`recall` sequences plus attacker actions (`attackerRecall`, `attackerSteer`,
+`attackerUnlockCallback`, `attackerDonate`), checked after every call, 256 runs × 500 calls
+with zero reverts expected (every handler action is wrapped in `try/catch` on purpose).
 
 | # | Invariant | Enforced by | Test |
 |---|---|---|---|
-| I1 Custody | No function transfers charter inventory except `recall` (issuer-only); every other payout is pull-based via `owed`/`claim` | `recall`, `claim` | `HandoverRecall.t.sol::test_Recall_NeverPaysMarketMakerDirectly` |
+| I1 Custody | No function transfers charter inventory except `recall` (issuer-only); every other payout is pull-based via `owed`/`claim` | `recall`, `claim` | `HandoverRecall.t.sol::test_Recall_NeverPaysMarketMakerDirectly`; `Invariants.t.sol::invariant_NonIssuerBalanceOnlyGrowsViaClaim` |
 | I2 Pool binding | Only `createCharter` takes a caller-supplied `PoolKey`; every other function takes a charter id, and `_afterSwap` no-ops for any pool with `charterOf[poolId] == 0` | `charterOf` mapping, `_afterSwap` early return | `RedTeam.t.sol::test_I2_SwapsInUnchartedPoolDoNotTouchCharterState` |
 | I3 Caller auth | `afterSwap`/`beforeDonate` are `onlyPoolManager` (OZ `BaseHook`); `unlockCallback` checks `msg.sender == poolManager`, and `PoolManager.unlock` only ever calls back its own caller, so nothing but the hook's own `_modify` can reach it with chosen data | `onlyPoolManager`, `unlockCallback`'s sender check | `RedTeam.t.sol::test_I3_DirectUnlockCallbackReverts`, `test_I3_DirectAfterSwapReverts` |
 | I4 Bounded steering | `steer`/`createCharter` require the range to contain the current tick, be aligned to `tickSpacing`, and fall inside `[minWidth, maxWidth] ⊂` the global caps | `CharterLib.validateParams`/`validateSteer` | `SteerPingPoke.t.sol::testFuzz_Steer_AlwaysBoundedAndContainsPrice` |
 | I5 No swap path | The hook only ever calls `PoolManager.modifyLiquidity`; it never calls `PoolManager.swap` or any router | absence of a swap call | `RedTeam.t.sol::test_I5_HookSourceNeverCallsPoolManagerSwap` |
-| I6 Conservation | Every outflow is rounded down against tracked balances (`idle`, `fees`, `owed`, `retainerRemaining`) | rounding direction in `_removeLiquidity`/`_addLiquidity`/`_closeEpoch` | `EpochAccrualClaim.t.sol::test_MultipleEpochs_PayoutsAndRefundsNeverExceedTotalRetainer` |
+| I6 Conservation | Every outflow is rounded down against tracked balances (`idle`, `fees`, `owed`, `retainerRemaining`) | rounding direction in `_removeLiquidity`/`_addLiquidity`/`_closeEpoch` | `EpochAccrualClaim.t.sol::test_MultipleEpochs_PayoutsAndRefundsNeverExceedTotalRetainer`; `Invariants.t.sol::invariant_HookBalanceCoversTrackedLiabilities` over 128k random calls |
 | I7 Honest measurement | Depth is recomputed from the pool's own price and the charter's own liquidity after every swap; `beforeDonate` always reverts | `DepthMath`, `_recache`, `_beforeDonate` | `RedTeam.t.sol::test_I7_WashTradeMovesFeesNotDepth` |
-| I8 Bounded pay | `payout = budget × scoreBps / 10000` with `scoreBps ≤ 10000` and `budget ≤ retainerRemaining`; `epochIndex` only increases | `_closeEpoch` | `EpochAccrualClaim.t.sol::test_FullyInBandEpoch_ScoresMaxAndPaysFullBudget`, `test_MultipleEpochs_...` |
+| I8 Bounded pay | `payout = budget × scoreBps / 10000` with `scoreBps ≤ 10000` and `budget ≤ retainerRemaining`; `epochIndex` only increases | `_closeEpoch` | `EpochAccrualClaim.t.sol::test_FullyInBandEpoch_ScoresMaxAndPaysFullBudget`, `test_MultipleEpochs_...`; `Invariants.t.sol::invariant_RetainerNeverExceedsDeposit` |
 | I9 Liveness | `poke` is callable by anyone once `now > lastHeartbeat + graceSeconds`, and only widens the range to the fallback band | `poke` | `SteerPingPoke.t.sol::test_Poke_AnyoneCanMoveStaleCharterToFallback`, `test_Poke_RevertWhenHeartbeatFresh` |
-| I10 Unblockable recall | `recall` is pull-based for every other party, makes no external call to the market maker, and cannot be paused | `recall` | `HandoverRecall.t.sol::test_Recall_SucceedsEvenIfMarketMakerContractReverts` |
+| I10 Unblockable recall | `recall` is pull-based for every other party, makes no external call to the market maker, and cannot be paused | `recall` | `HandoverRecall.t.sol::test_Recall_SucceedsEvenIfMarketMakerContractReverts`; `Invariants.t.sol::invariant_RecallNeverFailsWhileActive` |
 
 ## Hardening checklist
 
@@ -62,12 +65,6 @@ See BUILD.md §16 for the full list (price is measured at the current tick rathe
 TWAP; a market maker can still trade against the issuer's liquidity from a separate
 wallet; one charter per pool). On top of those:
 
-- **No invariant-fuzz handler yet.** BUILD.md §7 calls for a `LeadlineHandler` driving
-  random sequences of `swap`/`warp`/`steer`/`poke`/`handover`/`settle`/`claim`/`recall`
-  plus attacker actions, checked against I1/I6/I8/I10 after every call. The unit and
-  red-team tests in this repo exercise each invariant individually with hand-picked
-  sequences; they are not a substitute for that fuzz handler, which should land before
-  the final submission.
 - **`forge coverage` doesn't run with this project's `via_ir = true` build** (`Stack too
   deep` even with `--ir-minimum`). A coverage number for the README needs either a
   coverage-only profile with `via_ir = false` and a lower optimizer runs count, or a
