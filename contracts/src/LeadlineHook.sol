@@ -197,9 +197,9 @@ contract LeadlineHook is BaseHook, IUnlockCallback, ILeadline {
         }
 
         // Validate parameters
-        (, int24 currentTick,,) = poolManager.getSlot0(poolId);
+        (, int24 tickNow,,) = poolManager.getSlot0(poolId);
         int24 tickSpacing = p.key.tickSpacing;
-        CharterLib.validateParams(p, currentTick, tickSpacing);
+        CharterLib.validateParams(p, tickNow, tickSpacing);
 
         // Create charter
         id = nextId++;
@@ -267,8 +267,8 @@ contract LeadlineHook is BaseHook, IUnlockCallback, ILeadline {
         }
 
         int24 tickSpacing = c.key.tickSpacing;
-        (, int24 currentTick,,) = poolManager.getSlot0(c.key.toId());
-        CharterLib.validateSteer(c, tickLower, tickUpper, currentTick, tickSpacing);
+        (, int24 tickNow,,) = poolManager.getSlot0(c.key.toId());
+        CharterLib.validateSteer(c, tickLower, tickUpper, tickNow, tickSpacing);
 
         _accrue(id);
 
@@ -304,9 +304,9 @@ contract LeadlineHook is BaseHook, IUnlockCallback, ILeadline {
 
         _accrue(id);
 
-        (, int24 currentTick,,) = poolManager.getSlot0(c.key.toId());
-        int24 bandLo = currentTick - c.fallbackHalfWidth;
-        int24 bandHi = currentTick + c.fallbackHalfWidth;
+        (, int24 tickNow,,) = poolManager.getSlot0(c.key.toId());
+        int24 bandLo = tickNow - c.fallbackHalfWidth;
+        int24 bandHi = tickNow + c.fallbackHalfWidth;
 
         if (bandLo < TickMath.MIN_TICK) bandLo = TickMath.MIN_TICK;
         if (bandHi > TickMath.MAX_TICK) bandHi = TickMath.MAX_TICK;
